@@ -42,12 +42,15 @@
               <span>{{ song.name }} - {{ song.artist }}</span>
             </div>
   
-            <div class="song-count">{{ songs.length }}/3 Songs</div>
-  
-            <div v-if="songs.length < 3" class="add-song" @click="showSongModal = true">
+            <div class="song-actions">
+              <div v-if="songs.length < 3" class="add-song" @click="showSongModal = true">
               <i class="fa-solid fa-circle-plus"></i>
               <span>Add Song</span>
             </div>
+            <div class="song-count">{{ songs.length }}/3 Songs</div>
+            </div>
+
+
   
             <div class="popup-buttons">
               <button @click="createMixtape">Create Mixtape</button>
@@ -246,13 +249,13 @@
   .add-icon {
     background-color: #dbb4d7;
     color: #1f0d3e;
-    width: 28px;
-    height: 28px;
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 17px;
+    font-size: 15px;
     margin-left: auto;
     cursor: pointer;
   }
@@ -268,6 +271,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     z-index: 1000;
   }
   
@@ -275,7 +279,7 @@
     background-color: #080d2a;
     padding: 2rem;
     border-radius: 1rem;
-    width: 400px;
+    width: 600px;
     color: white;
     display: flex;
     flex-direction: column;
@@ -319,23 +323,32 @@
   }
   
   .song-item {
-    background-color: #1f0d3e;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
+    padding: 0.2rem;
+    text-align: center;
   }
   
-  .add-song {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    color: #fff;
-  }
-  
-  .song-count {
-    text-align: right;
-    font-size: 0.9rem;
-  }
+.song-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0;
+  padding: 0 2rem; /* 👈 Adds spacing to left and right */
+}
+
+.song-count {
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.add-song {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #fff;
+  margin: 0;
+}
+
   
   .popup-buttons {
     display: flex;
@@ -345,12 +358,13 @@
   
   .popup-buttons button {
     flex: 1;
-    padding: 0.75rem;
+    padding: 0.5rem;
     border: none;
     border-radius: 0.5rem;
     background-color: #dbb4d7;
     color: #1f0d3e;
     cursor: pointer;
+    font-size: 15px;
   }
   
   .popup-buttons button:hover {
@@ -468,8 +482,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: #dbb4d7;
-    color: #1f0d3e;
+    color: white;
     border-radius: 50%;
     width: 24px;
     height: 24px;
@@ -478,12 +491,12 @@
     justify-content: center;
   }
   
-  .search-icon { left: 10px; }
-  .sort-icon  { right: 10px; cursor: pointer; }
+  .search-icon { left: 7px; }
+  .sort-icon  { right: 0px; cursor: pointer; }
   
   .mixtape-input {
-    width: 100%;
-    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    width: 85%;
+    padding: 0.2rem 1rem 0.2rem 2.5rem;
     background-color: #432775;
     border: none;
     border-radius: 30px;
