@@ -332,7 +332,7 @@
   justify-content: space-between;
   align-items: center;
   margin: 0.5rem 0;
-  padding: 0 2rem; /* 👈 Adds spacing to left and right */
+  padding: 0 2rem;
 }
 
 .song-count {
