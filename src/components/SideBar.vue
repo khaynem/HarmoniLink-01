@@ -43,11 +43,11 @@
             </div>
   
             <div class="song-actions">
-              <div v-if="songs.length < 3" class="add-song" @click="showSongModal = true">
+              <div v-if="songs.length < 5" class="add-song" @click="showSongModal = true">
               <i class="fa-solid fa-circle-plus"></i>
               <span>Add Song</span>
             </div>
-            <div class="song-count">{{ songs.length }}/3 Songs</div>
+            <div class="song-count">{{ songs.length }}/5 Songs</div>
             </div>
 
 
@@ -151,7 +151,7 @@
     };
   
     const addSong = () => {
-      if (songs.value.length < 3 && songName.value && artistName.value) {
+      if (songs.value.length < 5 && songName.value && artistName.value) {
         songs.value.push({ name: songName.value, artist: artistName.value });
         songName.value = '';
         artistName.value = '';
