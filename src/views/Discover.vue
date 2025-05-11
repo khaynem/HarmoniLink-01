@@ -3,9 +3,13 @@
     <div class="discover-wrapper">
       <div class="discover-scroll">
         <div class="discover-container" :class="{ flipped: isFlipped }">
-          <!-- Nav buttons outside front/back for stable positioning -->
           <button class="nav-button left" @click="prevProfile">←</button>
           <button class="nav-button right" @click="nextProfile">→</button>
+
+          <!-- No Profiles Message -->
+          <div v-if="profiles.length === 0" class="no-profiles">
+            <p>No profiles available. Please check back later.</p>
+          </div>
 
           <div class="front">
             <div class="discover-top">
@@ -41,6 +45,11 @@
               <ol class="song-list">
                 <li v-for="(song, index) in currentProfile.songs" :key="index">{{ song }}</li>
               </ol>
+            </div>
+
+            <!-- Fallback message if no mixtapes are available -->
+            <div class="no-mixtape-message" v-else>
+              <p>No mixtapes yet. Wanna give them a chance?</p>
             </div>
 
             <div class="action-section">
@@ -251,7 +260,6 @@ function animateX(event) {
   z-index: 2;
 }
 
-/* Keep original styles inside front unchanged */
 .discover-top {
   width: 100%;
   display: flex;
@@ -403,6 +411,21 @@ function animateX(event) {
   flex: 1;
 }
 
+.no-mixtape-message {
+  background-color: rgba(108, 119, 178, 0.35);
+  position: relative;
+  padding: 9rem;
+  border-radius: 10px;
+  width: 31rem;
+  height: 380px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
 .action-section {
   margin-top: 1rem;
   padding: 0.8rem;
@@ -451,6 +474,13 @@ function animateX(event) {
 
 .arrow {
   margin-left: 0.5rem;
+}
+
+.no-profiles {
+  text-align: center;
+  color: #fff;
+  font-size: 1.2rem;
+  margin-top: 2rem;
 }
 
 </style>
