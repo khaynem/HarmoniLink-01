@@ -193,7 +193,6 @@ function handleMixtapeClick(profile, mixtape) {
   color: white;
   position: relative;
   overflow: hidden;
-  z-index: 1;
   width: 400px;
   height: 320px;
   display: flex;
@@ -215,7 +214,6 @@ function handleMixtapeClick(profile, mixtape) {
   align-items: center;
   padding: 0;
   cursor: pointer;
-  z-index: 1;
 }
 
 .heart-btn.clicked {
