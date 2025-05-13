@@ -198,7 +198,7 @@
   flex-direction: column;
   gap: 1rem;
   overflow: hidden;
-  z-index: 999;
+  z-index: 1;
 }
   
   .nav-section,
@@ -349,7 +349,6 @@
   margin: 0;
 }
 
-  
   .popup-buttons {
     display: flex;
     justify-content: space-between;
