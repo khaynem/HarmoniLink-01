@@ -11,14 +11,14 @@
             <p>No profiles available. Please check back later.</p>
           </div>
 
-          <div class="front">
+          <div class="front" v-if="currentProfile">
             <div class="discover-top">
               <div class="refresh-wrapper">
                 <span class="refresh-label">Next Refresh:</span><br />
-                <span class="refresh-time">03:00:00</span>
+                <span class="refresh-time">{{ refreshTime }}</span>
               </div>
               <div class="profile-count-wrapper">
-                <span class="profile-count">Profile today: 3</span>
+                <span class="profile-count">Profiles Viewed: {{ viewedProfiles }}/10</span>
               </div>
             </div>
 

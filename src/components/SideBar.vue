@@ -38,20 +38,23 @@
               class="description-box"
             ></textarea>
   
-            <div v-for="(song, index) in songs" :key="index" class="song-item">
-              <span>{{ song.name }} - {{ song.artist }}</span>
+            <div class="song-list-scroll">
+              <div v-for="(song, index) in songs" :key="index" class="song-item song-item-flex">
+                <span>{{ song.name }} - {{ song.artist }}</span>
+                <div class="song-actions-buttons">
+                  <i class="fa-solid fa-pen edit-icon" @click="editSong(index)"></i>
+                  <i class="fa-solid fa-trash delete-icon" @click="deleteSong(index)"></i>
+                </div>
+              </div>
             </div>
-  
+
             <div class="song-actions">
-              <div v-if="songs.length < 5" class="add-song" @click="showSongModal = true">
-              <i class="fa-solid fa-circle-plus"></i>
-              <span>Add Song</span>
-            </div>
-            <div class="song-count">{{ songs.length }}/5 Songs</div>
+              <div class="add-song" @click="showSongModal = true">
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>Add Song</span>
+              </div>
             </div>
 
-
-  
             <div class="popup-buttons">
               <button @click="createMixtape">Create Mixtape</button>
               <button @click="showConfirmCancel = true">Cancel</button>
@@ -71,10 +74,10 @@
   
         <div v-if="showConfirmCancel" class="modal-overlay">
           <div class="confirm-box">
-            <p>Confirm to close Mixtape Creation</p>
+            <p>Are you sure you want to close it?</p>
             <div class="confirm-buttons">
-              <button @click="closePopup">Confirm</button>
-              <button @click="showConfirmCancel = false">Decline</button>
+              <button @click="closePopup">Close</button>
+              <button @click="showConfirmCancel = false">Stay</button>
             </div>
           </div>
         </div>
@@ -89,8 +92,8 @@
   
         <div class="mixtape-list">
           <div class="mixtape-item" v-for="(mix, index) in mixtapes" :key="index">
-            <img src="/src/assets/logo2.png" alt="Mixtape Image" class="mixtape-img" />
-            <span>{{ mix }}</span>
+            <img :src="mix.photo_url || '/src/assets/logo2.png'" alt="Mixtape Image" class="mixtape-img" />
+            <span>{{ mix.name }}</span>
           </div>
         </div>
       </div>
@@ -159,6 +162,19 @@
       }
     };
   
+const editSong = (index) => {
+  const songToEdit = songs.value[index];
+  songName.value = songToEdit.name;
+  artistName.value = songToEdit.artist;
+  deleteSong(index);
+  showSongModal.value = true;
+};
+
+const deleteSong = (index) => {
+  songs.value.splice(index, 1);
+};
+
+
     const closeSongModal = () => {
       showSongModal.value = false;
       songName.value = '';
@@ -223,7 +239,7 @@
     color: white;
   }
   
-  .nav-item i {
+.nav-item i {
     width: 35px;
     height: 35px;
     background-color: #322848;
@@ -234,8 +250,6 @@
     justify-content: center;
     font-size: 17px;
   }
-  
-  /* --- Mixtape Section --- */
   
   .mixtape-header {
     display: flex;
@@ -260,7 +274,6 @@
     cursor: pointer;
   }
   
-  /* Popup for creating mixtape */
   .popup-overlay {
     position: fixed;
     top: 0;
@@ -348,14 +361,14 @@
   color: #fff;
   margin: 0;
 }
-
-  .popup-buttons {
+  
+.popup-buttons {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-  }
+}
   
-  .popup-buttons button {
+.popup-buttons button {
     flex: 1;
     padding: 0.5rem;
     border: none;
@@ -372,7 +385,6 @@
     border: 1px solid #ebebeb;
   }
   
-  /* Song details modal */
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -429,7 +441,6 @@
     cursor: pointer;
   }
   
-  /* Confirm close popup */
   .confirm-box {
     background-color: #dbb4d7;
     padding: 1rem;
@@ -453,18 +464,17 @@
   }
   
   .confirm-buttons button:first-child:hover {
-    background: #080d2a;
-    color: #dbb4d7;
-    border: 1px solid #ebebeb;
-  }
-  
-  .confirm-buttons button:last-child:hover {
     background: red;
     color: white;
     border: 1px solid #ebebeb;
   }
   
-  /* Mixtape list and search */
+  .confirm-buttons button:last-child:hover {
+    background: #080d2a;
+    color: #dbb4d7;
+    border: 1px solid #ebebeb;
+  }
+  
   .separator {
     border: none;
     border-top: 1px solid white;
@@ -521,6 +531,75 @@
     object-fit: cover;
     border-radius: 6px;
   }
+
+  .mixtape-name {
+  font-weight: bold;
+  font-size: 1.1rem; /* Slightly larger than default */
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.description-box {
+  font-size: 0.95rem;
+  padding: 0.5rem;
+  width: 100%;
+  height: 80px;
+  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+}
+
+.song-item {
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+  overflow-wrap: break-word;
+}
+
+.popup-box {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.song-item + .song-item {
+  border-top: 1px solid #3a2c56;
+}
+
+.popup-box .song-list-scroll {
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: #2e1f45;
+  padding: 0.5rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.song-item-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2c1a40;
+  padding: 0.5rem;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.song-actions-buttons i {
+  margin-left: 0.5rem;
+  cursor: pointer;
+  color: #c2b4d6;
+}
+
+.song-actions-buttons i:hover {
+  color: #ffffff;
+}
+
   </style>
   
   
