@@ -68,6 +68,7 @@
             <h3>Song Details</h3>
             <input type="text" v-model="songName" placeholder="Song Name" />
             <input type="text" v-model="artistName" placeholder="Artist Name" />
+            <input type="url" v-model="songUrl" placeholder="Song URL" />
             <button @click="addSong">Add Song to Mixtape</button>
           </div>
         </div>
@@ -76,8 +77,8 @@
           <div class="confirm-box">
             <p>Are you sure you want to close it?</p>
             <div class="confirm-buttons">
-              <button @click="closePopup">Close</button>
               <button @click="showConfirmCancel = false">Stay</button>
+              <button @click="closePopup">Close</button>
             </div>
           </div>
         </div>
@@ -100,68 +101,82 @@
     </div>
   </template>
   
-  <script setup>
-    import { ref } from 'vue';
-  
-    const showPopup = ref(false);
-    const showSongModal = ref(false);
-    const showConfirmCancel = ref(false);
-  
-    const navItems = [
-      { icon: 'fa-solid fa-user-plus', text: 'Discover', route: '/discover' },
-      { icon: 'fa-solid fa-pen', text: 'Feed', route: '/feed' },
-      { icon: 'fa-solid fa-trophy', text: 'Achievements', route: '/achievements' },
-      { icon: 'fa-solid fa-heart', text: 'Favorites', route: '/favorites' }
-    ];
-  
-    const mixtapes = ref([]); // get mixtapes from backend
-    const isSortedByName = ref(true);
-    const mixtapeName = ref('');
-    const mixtapeDescription = ref('');
-    const songName = ref('');
-    const artistName = ref('');
-    const songs = ref([]);
-    const photoUrl = ref(null);
-    const photoInput = ref(null);
-  
-    const togglePopup = () => {
-      showPopup.value = true;
-    };
-  
-    const closePopup = () => {
-      showPopup.value = false;
-      showConfirmCancel.value = false;
-      mixtapeName.value = '';
-      mixtapeDescription.value = '';
-      songs.value = [];
-      photoUrl.value = null;
-    };
-  
-    function triggerPhotoUpload() {
-      photoInput.value?.click();
-    }
-  
-    function handlePhotoUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        photoUrl.value = URL.createObjectURL(file);
-      }
-    }
-  
-    const createMixtape = () => {
-      console.log('Mixtape created:', mixtapeName.value, songs.value);
-      closePopup();
-    };
-  
-    const addSong = () => {
-      if (songs.value.length < 5 && songName.value && artistName.value) {
-        songs.value.push({ name: songName.value, artist: artistName.value });
-        songName.value = '';
-        artistName.value = '';
-        showSongModal.value = false;
-      }
-    };
-  
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const showPopup = ref(false);
+const showSongModal = ref(false);
+const showConfirmCancel = ref(false);
+
+const navItems = [
+  { icon: 'fa-solid fa-user-plus', text: 'Discover', route: '/discover' },
+  { icon: 'fa-solid fa-pen', text: 'Feed', route: '/feed' },
+  { icon: 'fa-solid fa-trophy', text: 'Achievements', route: '/achievements' },
+  { icon: 'fa-solid fa-heart', text: 'Favorites', route: '/favorites' }
+];
+
+const mixtapes = ref([]); // get mixtapes from backend
+const isSortedByName = ref(true);
+const mixtapeName = ref('');
+const mixtapeDescription = ref('');
+const songName = ref('');
+const artistName = ref('');
+const songs = ref([]);
+const songUrl = ref('');
+const photoUrl = ref(null);
+const photoInput = ref(null);
+
+const togglePopup = () => {
+  showPopup.value = true;
+};
+
+const closePopup = () => {
+  showPopup.value = false;
+  showConfirmCancel.value = false;
+  mixtapeName.value = '';
+  mixtapeDescription.value = '';
+  songs.value = [];
+  photoUrl.value = null;
+};
+
+function triggerPhotoUpload() {
+  photoInput.value?.click();
+}
+
+function handlePhotoUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    photoUrl.value = URL.createObjectURL(file);
+  }
+}
+
+const createMixtape = () => {
+  console.log('Mixtape created:', mixtapeName.value, songs.value);
+  closePopup();
+};
+
+const addSong = () => {
+  if (
+    songs.value.length < 5 &&
+    songName.value.trim() !== '' &&
+    artistName.value.trim() !== '' &&
+    songUrl.value.trim() !== ''
+  ) {
+    songs.value.push({
+      name: songName.value,
+      artist: artistName.value,
+      url: songUrl.value
+    });
+
+    songName.value = '';
+    artistName.value = '';
+    songUrl.value = '';
+    showSongModal.value = false;
+  } else {
+    alert('Please fill in all the song fields before adding.');
+  }
+};
+
 const editSong = (index) => {
   const songToEdit = songs.value[index];
   songName.value = songToEdit.name;
@@ -174,22 +189,48 @@ const deleteSong = (index) => {
   songs.value.splice(index, 1);
 };
 
+const closeSongModal = () => {
+  showSongModal.value = false;
+  songName.value = '';
+  artistName.value = '';
+};
 
-    const closeSongModal = () => {
-      showSongModal.value = false;
-      songName.value = '';
-      artistName.value = '';
-    };
-  
-    const sortMixtapes = () => {
-      if (isSortedByName.value) {
-        mixtapes.value.sort();
-      } else {
-        mixtapes.value.reverse();
-      }
-      isSortedByName.value = !isSortedByName.value;
-    };
-  </script>
+const sortMixtapes = () => {
+  if (isSortedByName.value) {
+    mixtapes.value.sort();
+  } else {
+    mixtapes.value.reverse();
+  }
+  isSortedByName.value = !isSortedByName.value;
+};
+
+// --- Drag and Drop Sorting ---
+let dragSourceIndex = null;
+
+const handleDragStart = (event, index) => {
+  dragSourceIndex = index;
+  event.dataTransfer.effectAllowed = 'move';
+};
+
+const handleDrop = (event, dropIndex) => {
+  if (dragSourceIndex !== null && dropIndex !== dragSourceIndex) {
+    const draggedSong = songs.value[dragSourceIndex];
+    songs.value.splice(dragSourceIndex, 1);
+    songs.value.splice(dropIndex, 0, draggedSong);
+  }
+  dragSourceIndex = null;
+};
+
+const handleDragOver = (event) => {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+};
+
+onMounted(() => {
+  dragSourceIndex = null;
+});
+</script>
+
   
   <style scoped>
   @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
@@ -464,14 +505,14 @@ const deleteSong = (index) => {
   }
   
   .confirm-buttons button:first-child:hover {
-    background: red;
-    color: white;
+    background: #080d2a;
+    color: #dbb4d7;
     border: 1px solid #ebebeb;
   }
   
   .confirm-buttons button:last-child:hover {
-    background: #080d2a;
-    color: #dbb4d7;
+    background: red;
+    color: white;
     border: 1px solid #ebebeb;
   }
   

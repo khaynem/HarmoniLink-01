@@ -242,12 +242,12 @@ function animateX(event) {
   font-size: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Ensures the action section goes to the bottom */
+  justify-content: space-between; 
   padding: 1rem;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
   user-select: none;
-  height: 100%; /* Ensure it takes full height */
+  height: 100%; 
 }
 
 .discover-container.flipped .front {

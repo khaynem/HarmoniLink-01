@@ -50,6 +50,24 @@
               </div>
             </div>
           </div>
+
+          <!-- Mixtape Popup -->
+          <div v-if="selectedMixtape" class="modal-overlay" @click="closeMixtapePopup"></div>
+          <div v-if="selectedMixtape" class="mixtape-popup">
+            <button class="exit-button" @click="closeMixtapePopup">✕</button>
+            <div class="back-mixtape">
+              <img :src="selectedMixtape.image" alt="Mixtape Image" class="mixtape-image" />
+              <h3 class="mixtape-title-back">{{ selectedMixtape.name }}</h3>
+              <ol v-if="selectedMixtape.songs && selectedMixtape.songs.length" class="song-list">
+                <li v-for="(song, index) in selectedMixtape.songs" :key="index">
+                  <span class="song-number">{{ index + 1 }}. </span>
+                  <span class="song-title">{{ song.title }}</span> by <span class="artist-name">{{ song.artist }}</span>
+                </li>
+              </ol>
+              <p v-else class="song-list">(No songs listed)</p>
+            </div>
+          </div>
+
       </div>
   </NavLayout>
 </template>
@@ -58,6 +76,7 @@
 import { ref } from 'vue'
 import NavLayout from '../layouts/NavLayout.vue'
 
+//temporary placeholders
 const profiles = ref([
   {
     name: 'Aso',
@@ -65,8 +84,35 @@ const profiles = ref([
     gender: 'Male',
     image: '/src/assets/test1.png',
     mixtapes: [
-      { name: 'Mixtape 1 ng Aso', description: 'Arf arf', image: '/src/assets/test1.png' },
-      { name: 'Side B ng Aso', description: 'Woof side', image: '/src/assets/test1.png' }
+      { 
+        name: 'Mixtape 1 ng Aso', 
+        description: 'Arf arf', 
+        image: '/src/assets/test1.png', 
+        songs: [
+          { title: 'Before I Do', artist: 'Sevyn Streeter' },
+          { title: 'All or Nothing (feat. Ella Mai)', artist: 'Queen Naija' },
+          { title: 'Now or Never - Bonus Track', artist: 'Kendrick Lamar' },
+          { title: 'No Guidance (feat. Drake)', artist: 'Kendrick Lamar' },
+          { title: 'Luther (with Sza)', artist: 'Kendrick Lamar' }
+        ] 
+      },
+      { 
+        name: 'Side B ng Aso', 
+        description: 'Woof side', 
+        image: '/src/assets/test1.png', 
+        songs: [
+          { title: 'Chill Vibe 1', artist: 'Artist A' },
+          { title: 'Chill Vibe 2', artist: 'Artist B' },
+          { title: 'Chill Vibe 3', artist: 'Artist C' },
+          { title: 'Chill Vibe 4', artist: 'Artist D' },
+          { title: 'Chill Vibe 5', artist: 'Artist E' },
+          { title: 'Chill Vibe 6', artist: 'Artist F' },
+          { title: 'Chill Vibe 7', artist: 'Artist G' },
+          { title: 'Chill Vibe 8', artist: 'Artist H' },
+          { title: 'Chill Vibe 9', artist: 'Artist I' },
+          { title: 'Chill Vibe 10', artist: 'Artist J' }
+        ] 
+      }
     ]
   },
   {
@@ -75,10 +121,42 @@ const profiles = ref([
     gender: 'Male',
     image: '/src/assets/test2.png',
     mixtapes: [
-      { name: 'Mixtape A', description: 'Chill vibes', image: '/src/assets/test2.png' },
-      { name: 'Mixtape B', description: 'Lo-fi tunes', image: '/src/assets/test2.png' },
-      { name: 'Mixtape C', description: 'Upbeat tracks', image: '/src/assets/test2.png' },
-      { name: 'Mixtape D', description: 'Night drive feels', image: '/src/assets/test2.png' }
+      { 
+        name: 'Mixtape A', 
+        description: 'Chill vibes', 
+        image: '/src/assets/test2.png', 
+        songs: [
+          { title: 'Chill 1', artist: 'Artist 1' },
+          { title: 'Chill 2', artist: 'Artist 2' }
+        ] 
+      },
+      { 
+        name: 'Mixtape B', 
+        description: 'Lo-fi tunes', 
+        image: '/src/assets/test2.png', 
+        songs: [
+          { title: 'Lo-fi 1', artist: 'Artist X' },
+          { title: 'Lo-fi 2', artist: 'Artist Y' },
+          { title: 'Lo-fi 3', artist: 'Artist Z' }
+        ] 
+      },
+      { 
+        name: 'Mixtape C', 
+        description: 'Upbeat tracks', 
+        image: '/src/assets/test2.png', 
+        songs: [
+          { title: 'Upbeat 1', artist: 'Artist L' }
+        ] 
+      },
+      { 
+        name: 'Mixtape D', 
+        description: 'Night drive feels', 
+        image: '/src/assets/test2.png', 
+        songs: [
+          { title: 'Night 1', artist: 'Artist M' },
+          { title: 'Night 2', artist: 'Artist N' }
+        ] 
+      }
     ]
   },
   {
@@ -87,53 +165,108 @@ const profiles = ref([
     gender: 'Male',
     image: '/src/assets/test3.png',
     mixtapes: [
-      { name: 'Mixtape ng tropa', description: 'Tweet vibes', image: '/src/assets/test3.png' }
+      { 
+        name: 'Mixtape ng tropa', 
+        description: 'Tweet vibes', 
+        image: '/src/assets/test3.png', 
+        songs: [
+          { title: 'Tweet 1', artist: 'Artist P' },
+          { title: 'Tweet 2', artist: 'Artist Q' }
+        ] 
+      }
     ]
   },
   {
-  name: 'Tigre',
-  age: 22,
-  gender: 'Female',
-  image: '/src/assets/test1.png',
-  mixtapes: [
-    { name: 'Roar Tracks', description: 'Purr-fect energy', image: '/src/assets/test1.png' }
+    name: 'Tigre',
+    age: 22,
+    gender: 'Female',
+    image: '/src/assets/test1.png',
+    mixtapes: [
+      { 
+        name: 'Roar Tracks', 
+        description: 'Purr-fect energy', 
+        image: '/src/assets/test1.png', 
+        songs: [
+          { title: 'Roar 1', artist: 'Artist R' },
+          { title: 'Roar 2', artist: 'Artist S' }
+        ] 
+      }
     ]
   },
   {
-  name: 'Daga',
-  age: 18,
-  gender: 'Male',
-  image: '/src/assets/test2.png',
-  mixtapes: [
-    { name: 'Sneaky Beats', description: 'Silent but deadly', image: '/src/assets/test2.png' },
-    { name: 'Nibble Vibes', description: 'Tiny tunes', image: '/src/assets/test2.png' }
+    name: 'Daga',
+    age: 18,
+    gender: 'Male',
+    image: '/src/assets/test2.png',
+    mixtapes: [
+      { 
+        name: 'Sneaky Beats', 
+        description: 'Silent but deadly', 
+        image: '/src/assets/test2.png', 
+        songs: [
+          { title: 'Sneak 1', artist: 'Artist T' }
+        ] 
+      },
+      { 
+        name: 'Nibble Vibes', 
+        description: 'Tiny tunes', 
+        image: '/src/assets/test2.png', 
+        songs: [
+          { title: 'Nibble 1', artist: 'Artist U' },
+          { title: 'Nibble 2', artist: 'Artist V' }
+        ] 
+      }
     ]
   },
   {
-  name: 'Kabayo',
-  age: 23,
-  gender: 'Female',
-  image: '/src/assets/test3.png',
-  mixtapes: [
-    { name: 'Gallop Grooves', description: 'Runaway rhythms', image: '/src/assets/test3.png' }
+    name: 'Kabayo',
+    age: 23,
+    gender: 'Female',
+    image: '/src/assets/test3.png',
+    mixtapes: [
+      { 
+        name: 'Gallop Grooves', 
+        description: 'Runaway rhythms', 
+        image: '/src/assets/test3.png', 
+        songs: [
+          { title: 'Gallop 1', artist: 'Artist W' },
+          { title: 'Gallop 2', artist: 'Artist X' }
+        ] 
+      }
     ]
   },
   {
-  name: 'Leon',
-  age: 25,
-  gender: 'Male',
-  image: '/src/assets/test1.png',
-  mixtapes: [
-    { name: 'Jungle Jams', description: 'Roar louder', image: '/src/assets/test1.png' }
+    name: 'Leon',
+    age: 25,
+    gender: 'Male',
+    image: '/src/assets/test1.png',
+    mixtapes: [
+      { 
+        name: 'Jungle Jams', 
+        description: 'Roar louder', 
+        image: '/src/assets/test1.png', 
+        songs: [
+          { title: 'Jungle 1', artist: 'Artist Y' }
+        ] 
+      }
     ]
   },
   {
-  name: 'Kuneho',
-  age: 20,
-  gender: 'Female',
-  image: '/src/assets/test2.png',
-  mixtapes: [
-    { name: 'Hop-Hop Hits', description: 'Bounce to the beat', image: '/src/assets/test2.png' }
+    name: 'Kuneho',
+    age: 20,
+    gender: 'Female',
+    image: '/src/assets/test2.png',
+    mixtapes: [
+      { 
+        name: 'Hop-Hop Hits', 
+        description: 'Bounce to the beat', 
+        image: '/src/assets/test2.png', 
+        songs: [
+          { title: 'Hop 1', artist: 'Artist Z' },
+          { title: 'Hop 2', artist: 'Artist A' },
+          { title: 'Hop 3', artist: 'Artist B' }
+        ] 
+      }
     ]
   }
 ])
@@ -149,9 +282,17 @@ function removeFavorite(index) {
   showConfirmIndex.value = null
 }
 
+const selectedMixtape = ref(null)
+const selectedProfile = ref(null)
+
 function handleMixtapeClick(profile, mixtape) {
-  console.log('Mixtape clicked:', profile.name, mixtape.name)
-  // You can add more logic here later
+  selectedProfile.value = profile
+  selectedMixtape.value = mixtape
+}
+
+function closeMixtapePopup() {
+  selectedProfile.value = null
+  selectedMixtape.value = null
 }
 </script>
 
@@ -296,6 +437,58 @@ function handleMixtapeClick(profile, mixtape) {
 .mixtape-details p {
   font-size: 0.85rem;
   margin: 0.2rem 0 0 0;
+}
+
+.mixtape-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  background-color: #1a1f4a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 35rem;
+  height: 25rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.mixtape-popup img {
+  display: block;
+  margin: 0 auto 1rem auto;
+  height: 130px;
+  width: 130px;
+}
+
+.song-list {
+  margin-top: 1rem;
+  overflow-y: auto; 
+  max-height: 180px; 
+  flex-grow: 1;
+  text-align: left;
+}
+
+.song-list li {
+  margin-bottom: 0.5rem;
+}
+
+.song-title {
+  font-weight: bold;
+}
+
+.exit-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
 }
 
 .modal-overlay {
