@@ -566,4 +566,160 @@
   color: #080d2a;
   font-weight: bold;
 }
+
+
+/* responsive try */
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .poll-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 2rem;
+    height: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* ensures content is centered as one block */
+    gap: 1rem;
+  }
+
+  .poll-content {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* KEEP nav arrows visible */
+  .nav-button.left,
+  .nav-button.right {
+    display: flex;
+  }
+
+  .create-poll-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .poll-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .poll-option {
+    flex: 1 1 calc(50% - 1rem);
+    min-width: 250px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.75rem;
+    box-sizing: border-box;
+  }
+
+  .poll-option-input {
+    width: 100%;
+  }
+
+  .poll-bar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .popup-container {
+    padding: 1.5rem;
+    width: 90%;
+  }
+
+  .poll-container {
+    padding: 1.5rem;
+    align-items: stretch;
+  }
+
+  .poll-profile {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .poll-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .poll-wrapper {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .poll-content {
+    padding: 1rem;
+  }
+
+  .option-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .create-poll-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .create-poll-container i {
+    align-self: center;
+  }
+
+  .submit-poll-btn {
+    padding: 0.7rem;
+  }
+
+  .poll-options {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .poll-option {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .poll-container {
+    padding: 1rem;
+  }
+
+  .poll-profile-info {
+    text-align: center;
+  }
+
+  .poll-option {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .poll-option-input {
+    width: 100%;
+  }
+
+  .poll-scroll {
+    padding: 0 0.5rem;
+  }
+
+  .poll-bar {
+    height: 1.5rem;
+  }
+}
+
+
 </style>

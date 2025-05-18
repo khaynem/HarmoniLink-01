@@ -641,6 +641,79 @@ onMounted(() => {
   color: #ffffff;
 }
 
+/*responsive try */
+/* Add smooth transition globally */
+.side-nav,
+.nav-item,
+.nav-item span,
+.mixtape-section,
+.mixtape-header,
+.mixtape-search,
+.mixtape-list,
+.mixtape-header span,
+.mixtape-search input,
+.mixtape-item span {
+  transition: all 0.3s ease;
+}
+
+/* Responsive changes for screens smaller than 768px */
+@media (max-width: 768px) {
+  .side-nav {
+    width: 80px;
+    padding: 1rem 0.5rem;
+  }
+
+  .nav-item {
+    gap: 0;
+    justify-content: center;
+  }
+
+  .nav-item span {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    transition: all 0.3s ease;
+  }
+
+  .mixtape-section {
+    padding: 1rem 0.5rem;
+  }
+
+  .mixtape-header span,
+  .mixtape-search input,
+  .mixtape-item span {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    transition: all 0.3s ease;
+  }
+
+  .mixtape-header,
+  .mixtape-search,
+  .mixtape-list {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-icon,
+  .search-icon,
+  .sort-icon {
+    margin: 0 auto;
+    font-size: 24px; 
+  }
+
+  .side-nav .nav-item i,
+  .side-nav .nav-item svg { 
+    font-size: 20px; 
+    margin: 0 auto;
+  }
+
+  .mixtape-img {
+    width: 50px;
+    height: 50px;
+  }
+}
+
   </style>
   
   
