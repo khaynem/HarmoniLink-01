@@ -302,7 +302,6 @@ function closeMixtapePopup() {
   background-color: #dbb4d7;
   min-height: 100vh;
   overflow: auto;
-  color: black;
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
@@ -311,7 +310,6 @@ function closeMixtapePopup() {
 .favorites-title {
   font-size: 2rem;
   font-weight: bold;
-  color: black;
 }
 
 .favorites-description {
