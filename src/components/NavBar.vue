@@ -2,9 +2,9 @@
   <nav class="top-nav">
     <img src="/src/assets/logo2.png" alt="Logo" class="logo" />
     <div class="search-container">
-      <i
-        class="fa-solid fa-microphone mic-icon"
-        :class="{ listening: isListening }"
+      <i 
+        class="fa-solid fa-microphone mic-icon" 
+        :class="{ 'listening': isListening }" 
         @click="toggleSpeechRecognition"
       ></i>
       <input
@@ -15,7 +15,6 @@
         @input="fetchSearchResults"
       />
     </div>
-
     <div class="user-menu">
       <i class="fa-solid fa-circle-user user-icon" @click="toggleDropdown"></i>
       <div v-if="showDropdown" class="dropdown-menu">
@@ -23,73 +22,72 @@
         <button class="dropdown-item logout-button" @click="logout">Logout</button>
       </div>
     </div>
-  </nav>
 
-  <div v-if="isListening" class="mic-overlay">
-    <i class="fa-solid fa-xmark overlay-close-button" @click="closeMicOverlay"></i>
-    <div class="mic-animation-wrapper">
-      <div class="mic-animation">
-        <i class="fa-solid fa-microphone mic-icon"></i>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
+    <!-- Mic overlay -->
+    <div v-if="isListening" class="mic-overlay">
+      <i 
+        class="fa-solid fa-xmark overlay-close-button" 
+        @click="closeMicOverlay"
+      ></i>
+      <div class="mic-animation-wrapper">
+        <div class="mic-animation">
+          <i class="fa-solid fa-microphone mic-icon"></i>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <p class="listening-text">{{ micStatusMessage }}</p>
       </div>
-      <p class="listening-text">{{ micStatusMessage }}</p>
     </div>
-  </div>
 
-  <div class="search-results" v-if="searchResults.length > 0">
-    <div
-      v-for="(result, index) in searchResults"
-      :key="result.type + '-' + index"
-      class="search-result-item"
-    >
-      <template v-if="result.type === 'user'">
-        <p>User: {{ result.username }}</p>
-      </template>
-      <template v-else-if="result.type === 'song'">
-        <p>Song: {{ result.name }}</p>
-      </template>
-      <template v-else-if="result.type === 'mixtape'">
-        <p>Mixtape: {{ result.name }}</p>
-      </template>
+    <div class="search-results" v-if="searchResults.length > 0">
+      <div v-for="(result, index) in searchResults" :key="result.type + '-' + index" class="search-result-item">
+        <template v-if="result.type === 'user'">
+          <p>User: {{ result.username }}</p>
+        </template>
+        <template v-else-if="result.type === 'song'">
+          <p>Song: {{ result.name }}</p>
+        </template>
+        <template v-else-if="result.type === 'mixtape'">
+          <p>Mixtape: {{ result.name }}</p>
+        </template>
+      </div>
     </div>
-  </div>
-</template>
+
+  </nav>
+</template> 
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const showDropdown = ref(false);
 const searchQuery = ref('');
 const isListening = ref(false);
 const micStatusMessage = ref('');
-const searchResults = ref([]);
-
+const emit = defineEmits(['search']);
 const router = useRouter();
+
 let recognition = null;
 
-function toggleDropdown() {
-  showDropdown.value = !showDropdown.value;
-}
-
-function logout() {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('userLoggedIn');
-  localStorage.removeItem('onboardingStep');
-  router.push('/login');
-}
+const searchResults = ref([]); 
 
 async function fetchSearchResults() {
   try {
     const response = await axios.get(`/api/search?q=${searchQuery.value}`);
-    searchResults.value = response.data;
+    searchResults.value = response.data; 
   } catch (error) {
     console.error('Error fetching search results:', error);
   }
 }
 
+// Emits search input
+function emitSearch() {
+  emit('search', searchQuery.value);
+}
+
+// Close mic overlay
 function closeMicOverlay() {
   if (recognition && isListening.value) {
     recognition.stop();
@@ -98,6 +96,20 @@ function closeMicOverlay() {
   micStatusMessage.value = '';
 }
 
+// Toggle dropdown menu
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value;
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('userLoggedIn');
+  localStorage.removeItem('onboardingStep');
+  router.push('/login');
+}
+
+// Toggle mic (moved outside of 'if' block)
 function toggleSpeechRecognition() {
   if (!recognition) {
     alert('Speech recognition is not supported in your browser.');
@@ -113,9 +125,18 @@ function toggleSpeechRecognition() {
   }, 800);
 }
 
+// Initialize SpeechRecognition
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    isListening.value = true;
+  };if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
@@ -133,7 +154,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     gotSpeechResult = true;
     const transcript = event.results[0][0].transcript;
     searchQuery.value = transcript;
-    fetchSearchResults();
+    emitSearchQuery();
     isListening.value = false;
     micStatusMessage.value = '';
   };
@@ -150,72 +171,93 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     }
   };
 }
+}
+
+//Addition para maayos yung sa search bar
+import { onMounted, onBeforeUnmount, watch } from 'vue';
+
+const showSearchResults = ref(false);
+
+function handleClickOutside(event) {
+  const searchEl = document.querySelector('.search-container');
+  const resultsEl = document.querySelector('.search-results');
+  if (
+    searchEl && !searchEl.contains(event.target) &&
+    resultsEl && !resultsEl.contains(event.target)
+  ) {
+    showSearchResults.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+watch(searchQuery, (newVal) => {
+  if (newVal.trim() === '') {
+    searchResults.value = [];
+    showSearchResults.value = false;
+  } else {
+    showSearchResults.value = true;
+  }
+});
+
 </script>
 
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+  @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 
-* {
-  font-family: 'Fira Code', monospace;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  * {
+    font-family: 'Fira Code', monospace;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: #dbb4d7;
-  overflow: hidden;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #dbb4d7;
+    overflow-x: hidden;
+  }
 
-.top-nav {
+  .top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
   background-color: #080d2a;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2.5rem 2rem;
-  height: 60px;
-  position: relative;
+  padding: 20px;
+  z-index: 4;
 }
 
-.logo {
-  height: 40px;
-}
+  .logo {
+    height: 40px;
+  }
 
-.search-container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  width: 30rem;
-}
+  .search-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    width: 30rem;
+  }
+</style>
 
-.mic-icon {
-  position: absolute;
-  left: 10px;
-  color: white;
-  z-index: 1;
-  cursor: pointer;
-}
-
-.mic-icon.listening {
-  color: red;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.5rem 1rem 0.5rem 2.5rem;
-  background-color: #432775;
-  border: none;
-  border-radius: 40px;
-  color: white;
-}
-
+<style scoped>
 .user-menu {
   position: relative;
 }
@@ -261,6 +303,29 @@ body {
   text-align: left;
 }
 
+.mic-icon {
+  position: absolute;
+  left: 10px;
+  color: white;
+  z-index: 1;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.mic-icon.listening {
+  color: red; 
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  background-color: #432775;
+  border: none;
+  border-radius: 40px;
+  color: white;
+}
+
+/* Mic overlay styles */
 .mic-overlay {
   position: fixed;
   top: 0;
@@ -327,7 +392,7 @@ body {
 }
 
 .overlay-close-button {
-  position: fixed;
+  position:fixed;
   top: 1.5rem;
   right: 1.5rem;
   font-size: 24px;

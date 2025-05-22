@@ -12,51 +12,45 @@
             <h2>Poll</h2>
             <button class="close-btn" @click="closeCreatePollPopup">×</button>
           </div>
-        <input
-          class="poll-input"
-          v-model="newPollQuestion"
-          placeholder="Enter your poll question"
-        />
+          <input
+            class="poll-input"
+            v-model="newPollQuestion"
+            placeholder="Enter your poll question"
+          />
 
-        <div class="options-label">Options</div>
+          <div class="options-label">Options</div>
           <div class="options-inputs">
-          <div v-for="(option, index) in newPollOptions" :key="index" class="option-row">
-            <input
-              class="poll-option-input"
-              v-model="newPollOptions[index]"
-              placeholder="Enter option"
-            />
-            <button v-if="newPollOptions.length > 1" @click="removePollOption(index)">−</button>
+            <div v-for="(option, index) in newPollOptions" :key="index" class="option-row">
+              <input
+                class="poll-option-input"
+                v-model="newPollOptions[index]"
+                placeholder="Enter option"
+              />
+              <button v-if="newPollOptions.length > 1" @click="removePollOption(index)">−</button>
+            </div>
+            <button
+              v-if="newPollOptions.length < 5"
+              class="add-option-btn"
+              @click="addPollOption"
+            >
+              + Add Option
+            </button>
           </div>
-          <button
-            v-if="newPollOptions.length < 5"
-            class="add-option-btn"
-            @click="addPollOption"
-          >
-            + Add Option
-          </button>
-        </div>
 
-        <button class="submit-poll-btn" @click="createPoll">Create Poll</button>
+          <button class="submit-poll-btn" @click="createPoll">Create Poll</button>
+        </div>
       </div>
-    </div>
 
       <div class="poll-scroll">
-        <div class="poll-container">
-          <button class="nav-button left" @click="prevProfile">←</button>
-          <button class="nav-button right" @click="nextProfile">→</button>
-          
-          <!-- Poll Details Container -->
-          <div class="poll-top">
-            <div class="refresh-wrapper">
-              <span class="refresh-label">Next Refresh:</span><br />
-              <span class="refresh-time">24:00:00</span>
-            </div>
-            <div class="profile-count-wrapper">
-              <span class="profile-count">Poll today: 3</span>
-            </div>
-          </div>
+        <button 
+          class="nav-button left" 
+          @click="prevProfile" 
+          :disabled="currentIndex === 0 || hasVoted"
+        > 
+          <i class="fa-solid fa-circle-arrow-left"></i>
+        </button>
 
+        <div class="poll-container">
           <!-- Poll Container -->
           <div class="poll-content">
             <div class="poll-profile">
@@ -94,8 +88,15 @@
               <span>Number of Votes: {{ totalVotes }}</span>
             </div>
           </div>
-          
         </div>
+
+        <button 
+          class="nav-button right" 
+          @click="nextProfile" 
+          :disabled="currentIndex === profiles.length - 1 || hasVoted"
+        > 
+          <i class="fa-solid fa-circle-arrow-right"></i>
+        </button>
       </div>
     </div>
   </NavLayout>
@@ -224,21 +225,52 @@
   }
 
   function createPoll() {
-    console.log('Creating poll with:', {
-      question: newPollQuestion.value,
-      options: newPollOptions.value.filter(opt => opt.trim() !== '')
-    })
+    const cleanedOptions = newPollOptions.value
+      .filter(opt => opt.trim() !== '')
+      .map(opt => ({
+        text: opt.trim(),
+        votes: 0,
+        voted: false
+      }))
+
+    if (!newPollQuestion.value.trim() || cleanedOptions.length < 2) {
+      alert('Please enter a question and at least two options.')
+      return
+    }
+
+    const newProfile = {
+      name: 'You',
+      age: 0,
+      gender: 'Unknown',
+      image: '/src/assets/default-profile.png',
+      poll: {
+        question: newPollQuestion.value.trim(),
+        options: cleanedOptions
+      }
+    }
+
+    profiles.value.push(newProfile)
+    currentIndex.value = profiles.value.length - 1
+    resetVoteState()
     closeCreatePollPopup()
   }
 </script>
 
-
 <style scoped>
 .poll-wrapper {
-  background-color: #ddb0d7;
-  height: calc(100vh - 60px);
-  overflow-y: auto;
-  padding: 2rem 1rem;
+  padding: 2rem;
+  background-color: #dbb4d7;
+  min-height: calc(100vh - 100px);
+  color: black;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  margin-top: 80px;
+  margin-left: 270px;
+}
+
+.poll-container {
+   box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
 
 .create-poll-container {
@@ -247,6 +279,7 @@
   gap: 7px;
   margin: 0 auto 0.5rem auto;
   width: 890px;
+  
 }
 
 .create-poll-container i {
@@ -329,7 +362,7 @@
   color: white;
 }
 
-.close-btn:hover{
+.close-btn:hover {
   color: #ddb0d7;
 }
 
@@ -402,6 +435,8 @@
 .poll-scroll {
   display: flex;
   justify-content: center;
+  align-items: center;
+  position: relative; /* Added for positioning nav buttons */
 }
 
 .poll-container {
@@ -416,53 +451,31 @@
 }
 
 .nav-button {
-  position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  background-color: transparent;
-  border: 2px solid #080d2a;
+  transform: translateY(-20%);
+  background: none;
+  border: none;
+  font-size: 2.5rem;
   color: #080d2a;
-  font-size: 2rem;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
   cursor: pointer;
-  z-index: 10;
-  user-select: none;
+  z-index: 1;
+  flex-direction: column; 
+  gap: 1rem; 
 }
 
-.nav-button.left {
-  left: -100px;
+.nav-button {
+  outline: none;
+  box-shadow: none;
 }
 
-.nav-button.right {
-  right: -100px;
+.nav-button:focus {
+  outline: none;
+  box-shadow: none;
 }
 
-.poll-top {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  color: #ffffff;
-  flex-grow: 0;
-}
-
-.refresh-label {
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-.refresh-time {
-  font-size: 0.9rem;
-}
-
-.profile-count {
-  background-color: #1c1b2e;
-  padding: 0.3rem 0.7rem;
-  border-radius: 30px;
-  font-size: 0.8rem;
-  display: inline-block;
+.nav-button:active {
+  outline: none;
+  box-shadow: none;
 }
 
 .poll-content {
@@ -566,160 +579,4 @@
   color: #080d2a;
   font-weight: bold;
 }
-
-
-/* responsive try */
-/* Responsive Styles */
-@media (max-width: 1024px) {
-  .poll-container {
-    width: 100%;
-    max-width: 100%;
-    padding: 2rem;
-    height: auto;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* ensures content is centered as one block */
-    gap: 1rem;
-  }
-
-  .poll-content {
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  /* KEEP nav arrows visible */
-  .nav-button.left,
-  .nav-button.right {
-    display: flex;
-  }
-
-  .create-poll-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .poll-options {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 1rem;
-    width: 100%;
-  }
-
-  .poll-option {
-    flex: 1 1 calc(50% - 1rem);
-    min-width: 250px;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0.75rem;
-    box-sizing: border-box;
-  }
-
-  .poll-option-input {
-    width: 100%;
-  }
-
-  .poll-bar {
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .popup-container {
-    padding: 1.5rem;
-    width: 90%;
-  }
-
-  .poll-container {
-    padding: 1.5rem;
-    align-items: stretch;
-  }
-
-  .poll-profile {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .poll-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .poll-wrapper {
-    padding: 1.5rem 0.75rem;
-  }
-
-  .poll-content {
-    padding: 1rem;
-  }
-
-  .option-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .create-poll-button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .create-poll-container i {
-    align-self: center;
-  }
-
-  .submit-poll-btn {
-    padding: 0.7rem;
-  }
-
-  .poll-options {
-    flex-direction: column;
-    width: 100%;
-    gap: 0.75rem;
-  }
-
-  .poll-option {
-    width: 100%;
-    min-width: unset;
-  }
-}
-
-@media (max-width: 480px) {
-  .poll-container {
-    padding: 1rem;
-  }
-
-  .poll-profile-info {
-    text-align: center;
-  }
-
-  .poll-option {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .poll-option-input {
-    width: 100%;
-  }
-
-  .poll-scroll {
-    padding: 0 0.5rem;
-  }
-
-  .poll-bar {
-    height: 1.5rem;
-  }
-}
-
-
 </style>
